@@ -16,6 +16,7 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 # Explicit allowlist so dev and doc files never leak into the package.
 $include = @(
     "manifest.json",
+    "LICENSE",
     "background.js",
     "popup.html",
     "popup.css",

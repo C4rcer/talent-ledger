@@ -3,6 +3,14 @@
 Draft for the first public (listed) submission to addons.mozilla.org.
 Add-on ID: `talent-ledger@spikespegal`. Account: C4rcer. Channel: listed.
 
+## Listing settings
+
+- License: MPL-2.0
+- Homepage / source: https://github.com/C4rcer/talent-ledger
+- Support contact: none public (Mozilla uses the account email for review)
+- Slug: talent-ledger
+- Experimental: no
+
 ## Name
 
 TalentLedger: Candidate Tracker
