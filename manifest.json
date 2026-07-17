@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "TalentLedger: Candidate Tracker",
+  "version": "0.2.0",
+  "description": "Recruiter sidekick: capture LinkedIn profiles, track outreach per job with a board, reminders, snippets and analytics, and export to Excel, CSV or ATS formats.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "talent-ledger@spikespegal",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "permissions": ["storage", "scripting", "downloads", "alarms", "clipboardWrite"],
+  "host_permissions": ["*://*.linkedin.com/*"],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TalentLedger",
+    "default_icon": {
+      "48": "icons/icon.svg",
+      "96": "icons/icon.svg"
+    }
+  },
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  }
+}

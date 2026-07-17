@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TalentLedger</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="icons/icon.svg" alt="">
+      <h1>TalentLedger</h1>
+    </div>
+    <div class="header-actions">
+      <a id="btnDonate" class="kofi" href="https://ko-fi.com/carcer7378" target="_blank" rel="noopener" title="TalentLedger is free and fully unlocked. If it saves you time, chip in on Ko-fi."><span class="heart">&#x2665;</span> Support</a>
+      <button id="btnSettings" class="icon-btn" title="Settings: statuses, snippets, reminders, import and backup">&#x2699;</button>
+      <button id="btnPopout" class="icon-btn" title="Open in its own window">&#x29C9;</button>
+    </div>
+  </header>
+
+  <section class="job-bar">
+    <select id="jobSelect" title="Job you are hiring for"></select>
+    <button id="btnNewJob" class="icon-btn" title="New job">&#xFF0B;</button>
+    <button id="btnEditJob" class="icon-btn" title="Rename job">&#x270E;</button>
+    <button id="btnDeleteJob" class="icon-btn danger" title="Delete job and its contacts">&#x1F5D1;</button>
+  </section>
+
+  <section class="view-bar">
+    <div class="tabs" id="viewTabs" role="tablist">
+      <button type="button" class="tab active" data-view="list" role="tab">List</button>
+      <button type="button" class="tab" data-view="board" role="tab">Board</button>
+      <button type="button" class="tab" data-view="analytics" role="tab">Analytics</button>
+    </div>
+    <button type="button" id="dueIndicator" class="due-pill hidden" title="Contacts awaiting a reply past your follow-up window. Click to show them."></button>
+  </section>
+
+  <form id="jobForm" class="card hidden">
+    <input id="jobTitle" type="text" placeholder="Job title, e.g. Senior SOC Analyst" maxlength="80" autocomplete="off">
+    <div class="row">
+      <button type="submit" class="primary">Save job</button>
+      <button type="button" id="btnCancelJob">Cancel</button>
+    </div>
+  </form>
+
+  <section class="capture-bar">
+    <button id="btnPull" class="primary wide">&#x21BB; Pull from LinkedIn page</button>
+    <button id="btnBulk" title="Capture several people from a LinkedIn search results page">Bulk</button>
+    <button id="btnManual" title="Add a contact by hand">Manual</button>
+  </section>
+
+  <form id="captureForm" class="card hidden">
+    <div class="grid">
+      <label>Name<input id="cName" autocomplete="off"></label>
+      <label>Headline<input id="cHeadline" autocomplete="off"></label>
+      <label>Company<input id="cCompany" autocomplete="off"></label>
+      <label>Location<input id="cLocation" autocomplete="off"></label>
+      <label class="full">Profile URL<input id="cUrl" autocomplete="off" spellcheck="false"></label>
+      <label>Status<select id="cStatus"></select></label>
+      <label class="full">Notes<textarea id="cNotes" rows="2"></textarea></label>
+    </div>
+    <p id="captureMsg" class="msg hidden"></p>
+    <div class="row">
+      <button type="submit" id="btnSaveContact" class="primary">Save contact</button>
+      <button type="button" id="btnCancelCapture">Cancel</button>
+    </div>
+  </form>
+
+  <form id="bulkForm" class="card hidden">
+    <div class="bulk-head">
+      <strong>Bulk capture</strong>
+      <span id="bulkCount" class="muted"></span>
+    </div>
+    <div class="bulk-actions">
+      <button type="button" id="bulkSelectAll">All</button>
+      <button type="button" id="bulkSelectNone">None</button>
+      <label class="inline-label">Status<select id="bulkStatus"></select></label>
+    </div>
+    <ul id="bulkList" class="bulk-list"></ul>
+    <p id="bulkMsg" class="msg hidden"></p>
+    <div class="row">
+      <button type="submit" class="primary">Save selected</button>
+      <button type="button" id="btnCancelBulk">Cancel</button>
+    </div>
+  </form>
+
+  <div id="listView" class="view">
+    <section class="toolbar">
+      <input id="searchInput" type="search" placeholder="Search contacts">
+      <select id="statusFilter" title="Filter by status">
+        <option value="">All statuses</option>
+      </select>
+    </section>
+    <ul id="contactList"></ul>
+    <p id="emptyState" class="empty hidden"></p>
+  </div>
+
+  <div id="boardView" class="view hidden">
+    <div id="board" class="board"></div>
+  </div>
+
+  <div id="analyticsView" class="view hidden">
+    <div id="analytics" class="analytics"></div>
+  </div>
+
+  <section id="settingsPanel" class="settings hidden">
+    <div class="settings-head">
+      <strong>Settings</strong>
+      <button type="button" id="btnCloseSettings" class="icon-btn" title="Close">&#x2715;</button>
+    </div>
+    <div class="settings-body">
+      <details class="set-group" open>
+        <summary>Statuses &amp; colour tags</summary>
+        <p class="hint">Rename, recolour, add or remove pipeline stages. Tick "awaiting" for stages that mean you are waiting on the candidate; those feed the follow-up badge.</p>
+        <ul id="statusEditor" class="status-editor"></ul>
+        <button type="button" id="btnAddStatus" class="small">+ Add status</button>
+      </details>
+
+      <details class="set-group">
+        <summary>Follow-up reminders</summary>
+        <p class="hint">Flag contacts in an "awaiting" status with no change for this many days. The count shows on the toolbar badge and the Due pill.</p>
+        <label class="inline-label">Remind after
+          <input id="reminderDays" type="number" min="0" max="120" step="1" class="num">
+          days
+        </label>
+      </details>
+
+      <details class="set-group">
+        <summary>Message snippets</summary>
+        <p class="hint">Reusable outreach templates. Variables <code>{firstName}</code>, <code>{lastName}</code>, <code>{fullName}</code>, <code>{jobTitle}</code>, <code>{company}</code>, <code>{headline}</code>, <code>{location}</code> fill from the contact and the current job when you copy.</p>
+        <ul id="snippetEditor" class="snippet-editor"></ul>
+        <button type="button" id="btnAddSnippet" class="small">+ Add snippet</button>
+      </details>
+
+      <details class="set-group">
+        <summary>Import</summary>
+        <p class="hint">Import a CSV into the selected job. A header row is matched by name (Name, Headline, Company, Location, Profile URL, Status, Notes); duplicates within the job are skipped.</p>
+        <button type="button" id="btnImportCsv" class="small">Import CSV into current job&hellip;</button>
+      </details>
+
+      <details class="set-group">
+        <summary>Backup &amp; restore</summary>
+        <p class="hint">A backup carries every job, contact and setting. Plain JSON is convenient; an encrypted <code>.tlbak</code> file is the offline way to move data between machines: carry the file yourself, nothing is uploaded.</p>
+        <div class="row wrap">
+          <button type="button" id="btnBackupJson" class="small">Export backup (JSON)</button>
+          <button type="button" id="btnRestoreJson" class="small">Restore from backup&hellip;</button>
+        </div>
+        <label class="inline-label full">Passphrase (for encrypted backup)
+          <input id="backupPass" type="password" autocomplete="off" spellcheck="false" placeholder="Used only on this machine">
+        </label>
+        <div class="row wrap">
+          <button type="button" id="btnBackupEnc" class="small">Export encrypted (.tlbak)</button>
+          <button type="button" id="btnRestoreEnc" class="small">Restore encrypted&hellip;</button>
+        </div>
+        <label class="check-label">
+          <input id="restoreReplace" type="checkbox"> Replace all data on restore (otherwise merge)
+        </label>
+      </details>
+
+      <details class="set-group">
+        <summary>ATS export templates</summary>
+        <p class="hint">Export the selected job as candidate CSV shaped for a common ATS. Email and phone are left blank for you to fill; status carries through as the stage, source or tag.</p>
+        <div class="row wrap" id="atsButtons"></div>
+      </details>
+    </div>
+  </section>
+
+  <input type="file" id="fileInput" accept=".csv,.json,.tlbak,text/csv,application/json" hidden>
+
+  <footer>
+    <span id="footerStats"></span>
+    <span class="spacer"></span>
+    <button id="btnExportCsv" title="CSV of the selected job">CSV</button>
+    <button id="btnExportXlsx" class="primary" title="Excel workbook, one tab per job plus a summary">Export Excel</button>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
